@@ -88,7 +88,6 @@ def define_common_squad_flags():
       'another.')
 
   common_flags.define_common_bert_flags()
-  common_flags.define_gin_flags()
 
 
 FLAGS = flags.FLAGS
@@ -222,13 +221,14 @@ def train_squad(strategy,
                 bert_config,
                 custom_callbacks=None,
                 run_eagerly=False,
-                init_checkpoint=None):
+                init_checkpoint=None,
+                sub_model_export_name=None):
   """Run bert squad training."""
   if strategy:
     logging.info('Training using customized training loop with distribution'
                  ' strategy.')
   # Enables XLA in Session Config. Should not be set for TPU.
-  keras_utils.set_config_v2(FLAGS.enable_xla)
+  keras_utils.set_session_config(FLAGS.enable_xla)
   performance.set_mixed_precision_policy(common_flags.dtype())
 
   epochs = FLAGS.num_train_epochs
@@ -280,6 +280,7 @@ def train_squad(strategy,
       epochs=epochs,
       train_input_fn=train_input_fn,
       init_checkpoint=init_checkpoint or FLAGS.init_checkpoint,
+      sub_model_export_name=sub_model_export_name,
       run_eagerly=run_eagerly,
       custom_callbacks=custom_callbacks,
       explicit_allreduce=False,

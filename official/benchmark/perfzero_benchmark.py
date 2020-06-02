@@ -75,6 +75,10 @@ class PerfZeroBenchmark(tf.test.Benchmark):
 
     logging.info('root_data_dir: %s', root_data_dir)
 
+  @property
+  def tpu(self):
+    return self.default_flags.get('tpu', None)
+
   def _get_model_dir(self, folder_name):
     """Returns directory to store info, e.g. saved model and event log."""
     return os.path.join(self.output_dir, folder_name)
